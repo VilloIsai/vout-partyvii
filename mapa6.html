@@ -57,23 +57,25 @@
       display: block;
       opacity: 0.85;
     }
-    /* Círculos: 60px de diámetro, con animación popIn y efecto de brillo latente */
+    /* Círculos: ahora 40px de diámetro, centrados y con animaciones */
     .circle {
       position: absolute;
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       pointer-events: none;
       overflow: hidden;
       transition: transform 0.3s ease;
       animation: popIn 0.6s ease-out, pulseGlow 2s infinite;
+      /* Centramos el círculo en su posición asignada */
+      transform: translate(-50%, -50%) scale(1);
     }
     .circle:hover {
-      transform: scale(1.2);
+      transform: translate(-50%, -50%) scale(1.2);
     }
     @keyframes popIn {
-      0% { transform: scale(0); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
     @keyframes pulseGlow {
       0%, 100% { box-shadow: 0 0 10px rgba(255,255,255,0.4); }
@@ -137,6 +139,10 @@
       { letter: "L", x: 90,  y: 700 }
     ];
     
+    // Definimos las dimensiones base del mapa para calcular posiciones relativas
+    const originalWidth = 600;
+    const originalHeight = 750;
+    
     // Mapeo de nombres en español a valores CSS válidos.
     const colorMapping = {
       "rojo": "red",
@@ -179,9 +185,11 @@
       puntos.forEach((punto, index) => {
         const circle = document.createElement("div");
         circle.classList.add("circle");
-        // Posicionar el círculo (60px de diámetro) centrado en la coordenada (x, y)
-        circle.style.left = (punto.x - 60/2) + "px";
-        circle.style.top  = (punto.y - 60/2) + "px";
+        /* Posicionar el círculo usando porcentajes relativos a la dimensión base.
+           De esta forma, en dispositivos móviles la posición se mantiene proporcional.
+           Usamos 40px de diámetro, por lo que ya no restamos la mitad de 60px. */
+        circle.style.left = (punto.x / originalWidth * 100) + "%";
+        circle.style.top  = (punto.y / originalHeight * 100) + "%";
         
         const color = colorPool[index];
         circle.style.backgroundColor = colorMapping[color];
