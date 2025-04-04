@@ -36,6 +36,7 @@
       position: relative;
       width: 90%;
       max-width: 600px;
+      /* Aspect ratio establecido según dimensiones del mapa */
       aspect-ratio: 1080/1350;
       background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(6px);
@@ -57,23 +58,25 @@
       display: block;
       opacity: 0.85;
     }
-    /* Círculos: 60px de diámetro, animación "popIn" y efecto de brillo latente */
+    /* Círculos: 40px de diámetro, centrados con translate y animados */
     .circle {
       position: absolute;
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       pointer-events: none;
       overflow: hidden;
       transition: transform 0.3s ease;
       animation: popIn 0.6s ease-out, pulseGlow 2s infinite;
+      /* Centramos el círculo en la posición asignada */
+      transform: translate(-50%, -50%) scale(1);
     }
     .circle:hover {
-      transform: scale(1.2);
+      transform: translate(-50%, -50%) scale(1.2);
     }
     @keyframes popIn {
-      0% { transform: scale(0); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
     @keyframes pulseGlow {
       0%, 100% { box-shadow: 0 0 10px rgba(255,255,255,0.4); }
@@ -137,6 +140,10 @@
       { letter: "L", x: 90,  y: 700 }
     ];
 
+    // Definimos las dimensiones base del mapa para calcular las posiciones relativas
+    const originalWidth = 600;
+    const originalHeight = 750;
+
     // Mapeo de los nombres en español a valores CSS válidos
     const colorMapping = {
       "azul": "blue",
@@ -157,7 +164,7 @@
 
     // Función para crear un pool de 12 colores:
     // - Se asigna 2 apariciones de cada uno de los 5 colores base (total 10)
-    // - Se agregan 2 colores adicionales elegidos al azar entre la lista base
+    // - Se agregan 2 colores adicionales elegidos al azar entre la lista base.
     function generarColorPool() {
       const baseColors = ["azul", "amarillo", "blanco", "rojo", "verde"];
       let pool = [];
@@ -172,7 +179,7 @@
       return shuffleArray(pool);
     }
 
-    // Función para generar los círculos en el mapa
+    // Función para generar los círculos en el mapa.
     // Según el color asignado:
     // • Para "amarillo", "blanco" y "verde" se usará la imagen voutn.png.
     // • Para "azul" y "rojo" se usará voutb.png.
@@ -183,10 +190,10 @@
       puntos.forEach((punto, index) => {
         const circle = document.createElement("div");
         circle.classList.add("circle");
-        // Posicionar el círculo (60px de diámetro) centrado en la coordenada (x, y)
-        circle.style.left = (punto.x - 60/2) + "px";
-        circle.style.top  = (punto.y - 60/2) + "px";
-
+        // Posicionar el círculo usando porcentajes relativos a la dimensión base
+        circle.style.left = (punto.x / originalWidth * 100) + "%";
+        circle.style.top  = (punto.y / originalHeight * 100) + "%";
+        
         const color = colorPool[index];
         circle.style.backgroundColor = colorMapping[color];  // Convertir al valor CSS
 
