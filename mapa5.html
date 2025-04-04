@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Tus primeros votantes!</title>
+  <!-- Fuentes elegantes: Lora para el título y Roboto para el cuerpo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Roboto:wght@400;700&display=swap" 
+    rel="stylesheet">
+  <style>
+    /* Fondo oscuro, degradado elegante y tipografía refinada */
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #000, #222);
+      font-family: 'Roboto', sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      justify-content: center;
+    }
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 2.8rem;
+      margin-bottom: 20px;
+      color: #f1c40f;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+    }
+    /* Contenedor del mapa con efecto glassmorphism */
+    .map-container {
+      position: relative;
+      width: 90%;
+      max-width: 600px;
+      aspect-ratio: 1080/1350;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+      margin-bottom: 20px;
+      overflow: hidden;
+      animation: fadeInUp 1s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .map-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.85;
+    }
+    /* Círculos: 60px de diámetro, animación "popIn" y efecto de brillo latente */
+    .circle {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      pointer-events: none;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      animation: popIn 0.6s ease-out, pulseGlow 2s infinite;
+    }
+    .circle:hover {
+      transform: scale(1.2);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 10px rgba(255,255,255,0.4); }
+      50% { box-shadow: 0 0 20px rgba(255,255,255,0.8); }
+    }
+    .circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    /* Botones con degradado, sombra y efecto hover */
+    .buttons-container {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: linear-gradient(45deg, #f1c40f, #e67e22);
+      color: #0d1b2a;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+  <h1>¡Tus primeros votantes!</h1>
+  <div class="map-container">
+    <img src="argena.png" alt="Mapa de Argena">
+    <!-- Los círculos se insertarán aquí mediante JavaScript -->
+  </div>
+  <div class="buttons-container">
+    <button class="btn" onclick="resetCircles()">Reiniciar</button>
+    <button class="btn" onclick="location.href='mapainicio.html'">Volver al Menú</button>
+  </div>
+  
+  <script>
+    // Array de 12 puntos (la propiedad "letter" es solo para referencia)
+    const puntos = [
+      { letter: "A", x: 160, y: 200 },
+      { letter: "B", x: 290, y: 160 },
+      { letter: "C", x: 420, y: 130 },
+      { letter: "D", x: 370, y: 330 },
+      { letter: "E", x: 130, y: 400 },
+      { letter: "F", x: 250, y: 370 },
+      { letter: "G", x: 220, y: 530 },
+      { letter: "H", x: 410, y: 530 },
+      { letter: "I", x: 470, y: 280 },
+      { letter: "J", x: 370, y: 650 },
+      { letter: "K", x: 180, y: 700 },
+      { letter: "L", x: 90,  y: 700 }
+    ];
+
+    // Mapeo de los nombres en español a valores CSS válidos
+    const colorMapping = {
+      "azul": "blue",
+      "amarillo": "yellow",
+      "blanco": "white",
+      "rojo": "red",
+      "verde": "green"
+    };
+
+    // Función para mezclar un array (algoritmo Fisher-Yates)
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Función para crear un pool de 12 colores:
+    // - Se asigna 2 apariciones de cada uno de los 5 colores base (total 10)
+    // - Se agregan 2 colores adicionales elegidos al azar entre la lista base
+    function generarColorPool() {
+      const baseColors = ["azul", "amarillo", "blanco", "rojo", "verde"];
+      let pool = [];
+      baseColors.forEach(color => {
+        pool.push(color);
+        pool.push(color);
+      });
+      for (let i = 0; i < 2; i++) {
+        const randomColor = baseColors[Math.floor(Math.random() * baseColors.length)];
+        pool.push(randomColor);
+      }
+      return shuffleArray(pool);
+    }
+
+    // Función para generar los círculos en el mapa
+    // Según el color asignado:
+    // • Para "amarillo", "blanco" y "verde" se usará la imagen voutn.png.
+    // • Para "azul" y "rojo" se usará voutb.png.
+    function generarCirculos() {
+      const contenedor = document.querySelector(".map-container");
+      const colorPool = generarColorPool(); // Pool de 12 colores aleatorios
+
+      puntos.forEach((punto, index) => {
+        const circle = document.createElement("div");
+        circle.classList.add("circle");
+        // Posicionar el círculo (60px de diámetro) centrado en la coordenada (x, y)
+        circle.style.left = (punto.x - 60/2) + "px";
+        circle.style.top  = (punto.y - 60/2) + "px";
+
+        const color = colorPool[index];
+        circle.style.backgroundColor = colorMapping[color];  // Convertir al valor CSS
+
+        // Crear la imagen interna según el color asignado:
+        // Si es "amarillo", "blanco" o "verde" → voutn.png;
+        // de lo contrario ("azul" o "rojo") → voutb.png.
+        const img = document.createElement("img");
+        if (color === "amarillo" || color === "blanco" || color === "verde") {
+          img.src = "voutn.png";
+        } else {
+          img.src = "voutb.png";
+        }
+        circle.appendChild(img);
+        contenedor.appendChild(circle);
+      });
+    }
+
+    // Función para reiniciar: elimina los círculos actuales y los vuelve a generar
+    function resetCircles() {
+      const contenedor = document.querySelector(".map-container");
+      const circles = document.querySelectorAll(".circle");
+      circles.forEach(circle => circle.remove());
+      generarCirculos();
+    }
+
+    // Generar los círculos al cargar la página
+    generarCirculos();
+  </script>
+</body>
+</html>

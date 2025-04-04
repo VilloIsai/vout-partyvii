@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- Preload de la fuente para minimizar el flash (FOUT) -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;600&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turno DERECHA - Voto con Ideología</title>
+  <style>
+    /* Fondo moderno: degradado diagonal oscuro */
+    body {
+      font-family: 'Raleway', sans-serif;
+      margin: 0;
+      padding: 30px;
+      background: linear-gradient(135deg, #1e1e1e, #313131);
+      color: #f0f0f0;
+      min-height: 100vh;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    /* Botón "Volver" fijo en la esquina superior izquierda */
+    .volver {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #444;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+      z-index: 1100;
+    }
+    .volver:hover {
+      background: #555;
+    }
+    
+    h1, h3 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    /* Contenedor tipo grid responsivo para las tarjetas */
+    #lawsContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      justify-items: center;
+      margin: 40px auto;
+      max-width: 1200px;
+    }
+    
+    /* Tarjetas de ley: estilo moderno con elevación */
+    .law {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 12px;
+      padding: 20px;
+      width: 300px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .law:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+    .law p {
+      margin: 10px 0;
+      line-height: 1.4;
+    }
+    /* Fondos especiales para las leyes de DERECHA (más oscuro) */
+    .right-law {
+      background: linear-gradient(135deg, #0D2C54, #0A1A2A);
+    }
+    
+    /* Estilo para el círculo (emoji) estándar */
+    .emoji-circle {
+      display: inline-block;
+      background-color: #007BFF;
+      color: #fff;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      font-size: 16px;
+      margin-right: 5px;
+    }
+    .positive { color: #32cd32; font-weight: bold; }
+    .negative { color: #ff4500; font-weight: bold; }
+    
+    /* Modal overlay para mostrar la ley seleccionada */
+    #modalOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    #modalCard {
+      background: #1f1f1f;
+      border-radius: 12px;
+      padding: 30px;
+      width: 320px;
+      min-height: 420px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+      color: #f0f0f0;
+      font-size: 20px;
+      line-height: 1.5;
+    }
+    #modalCard h3 { margin-top: 0; }
+    #modalClose {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #555;
+      margin: 15px 0;
+    }
+    /* Recuadro de problemática: fondo opaco similar al de Izquierda */
+    .problem-box {
+      background-color: #3a3a00;
+      color: #f0f0f0;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .pero-label {
+      background-color: #ffcccc;
+      color: #000;
+      padding: 2px 4px;
+      border-radius: 4px;
+      margin: 0 4px;
+      font-weight: bold;
+      display: inline-block;
+    }
+    /* Nuevo estilo para el bonus */
+    .bonus-box {
+      border: 2px solid #FFD700;
+      background: rgba(255, 215, 0, 0.1);
+      padding: 10px;
+      text-align: center;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    /* Nuevo estilo para leyes de urgencia: efecto rojo latente con fondo degradado oscuro en movimiento */
+    .urgency-law {
+      border: 3px solid #ff0000;
+      box-shadow: 0 0 20px 2px rgba(255, 0, 0, 0.8);
+      /* Degradado de negro a un rojo interior más oscuro (#400000) */
+      background: linear-gradient(45deg, #000000, #400000);
+      background-size: 200% 200%;
+      animation: urgencyBackground 3s ease infinite, rojoLatente 2s infinite;
+    }
+    @keyframes urgencyBackground {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes rojoLatente {
+      0%, 100% { box-shadow: 0 0 20px 2px rgba(255, 0, 0, 0.8); }
+      50% { box-shadow: 0 0 30px 4px rgba(255, 0, 0, 1); }
+    }
+    /* Estilo para la aclaración debajo de la problemática */
+    .aclaracion {
+      background-color: #000;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+    /* Estilos para los círculos de problemáticas en urgencia */
+    .urgency-problems {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .problem-item {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      color: #fff;
+    }
+    .problem-circle {
+      display: inline-block;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      margin-right: 8px;
+      border: 2px solid #000;
+      font-size: 20px;
+      position: relative;
+      color: #fff;
+    }
+    /* Círculos de color rojo con efecto metálico */
+    .circle-red {
+      background: linear-gradient(45deg, #8B0000, #FF0000);
+      background-size: 200% 200%;
+      animation: metallic 3s linear infinite;
+    }
+    /* Círculos de color azul con efecto metálico */
+    .circle-blue {
+      background: linear-gradient(45deg, #00008B, #0000FF);
+      background-size: 200% 200%;
+      animation: metallic 3s linear infinite;
+    }
+    @keyframes metallic {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    @media (max-width: 600px) {
+      #lawsContainer { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <button class="volver" onclick="location.href='ideologia.html'">⬅ Volver</button>
+  <h1>Turno DERECHA</h1>
+  <div id="lawsContainer"></div>
+  
+  <!-- Modal overlay para mostrar la ley seleccionada -->
+  <div id="modalOverlay">
+    <div id="modalCard">
+      <button id="modalClose">Volver</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+  
+  <script>
+    // Función que reemplaza el separador "/" por "PERO" con estilo
+    function replaceSlashWithPero(text) {
+      return text.replace(/\s*\/\s*/g, ' <span class="pero-label">PERO</span> ');
+    }
+    
+    // Función para reemplazar valores numéricos y colores, insertando emojis y el separador
+    function replaceColors(text) {
+      let modified = replaceSlashWithPero(text);
+      modified = modified.replace(/([+-]?\d+)\s*(Amarillo|Azul|Verde|Rojo)/gi, (match, num, color) => {
+        const squares = { "Amarillo": "🟨", "Azul": "🟦", "Verde": "🟩", "Rojo": "🟥" };
+        let square = squares[color] || color;
+        if (num[0] !== '-' && num[0] !== '+') { 
+          num = '+' + num; 
+        }
+        const cls = num.startsWith('+') ? 'positive' : 'negative';
+        return `<span class="${cls}">${num} ${square}</span>`;
+      });
+      return modified;
+    }
+    
+    // Función para obtener el emoji y la clase del círculo según la problemática
+    function getUrgencyCircle(problemName) {
+      let lower = problemName.toLowerCase();
+      if (lower === 'humanidad') {
+        return { class: 'circle-red', emoji: '🤍' };
+      } else if (lower === 'justicia') {
+        return { class: 'circle-blue', emoji: '👮‍♂️' };
+      } else if (lower === 'soberanía' || lower === 'soberania') {
+        return { class: 'circle-blue', emoji: '🍃' };
+      } else if (lower === 'equidad') {
+        return { class: 'circle-blue', emoji: '⚖️' };
+      }
+      return { class: 'circle-red', emoji: '❔' };
+    }
+    
+    // Función que genera el HTML de las problemáticas para leyes de urgencia
+    function buildUrgencyProblems(problemText) {
+      let regex = /([A-Za-záéíóúñ]+)\s*(\d+)/g;
+      let match;
+      let resultHTML = '<div class="urgency-problems">';
+      // Recorre las ocurrencias, por ejemplo "Humanidad 1 Soberanía 1"
+      while ((match = regex.exec(problemText)) !== null) {
+        let problemName = match[1];
+        let count = parseInt(match[2], 10);
+        let circleInfo = getUrgencyCircle(problemName);
+        let multiplier = count > 1 ? ' x' + count : '';
+        resultHTML += `<span class="problem-item">
+                        <span class="problem-circle ${circleInfo.class}">${circleInfo.emoji}</span> ${problemName}${multiplier}
+                       </span>`;
+      }
+      resultHTML += '</div>';
+      return resultHTML;
+    }
+    
+    // Función para seleccionar elementos aleatorios sin repetir de un arreglo
+    function getRandomElements(arr, count) {
+      const copy = arr.slice();
+      const result = [];
+      for (let i = 0; i < count && copy.length; i++) {
+        const index = Math.floor(Math.random() * copy.length);
+        result.push(copy.splice(index, 1)[0]);
+      }
+      return result;
+    }
+    
+    // Arreglos de leyes existentes
+    const commonLaws = [
+      { id: "Ley 1",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Azul",           C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 2",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo",                     C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 3",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde y Azul",     C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 4",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde",            C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 5",  A: "+1 Amarillo +1 Rojo (P)",           B: "+1 Amarillo / -1 Rojo",             C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 6",  A: "+1 Rojo (P)",                       B: "+1 Amarillo / -1 Azul",             C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 7",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde",            C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 8",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde y Azul",     C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 9",  A: "+1 Amarillo +1 Rojo (P)",           B: "+1 Amarillo",                     C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 10", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Azul",           C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 11", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde",          C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 12", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde y Azul",   C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 13", A: "+1 Amarillo +1 Rojo (P)",           B: "+1 Amarillo / -1 Azul",           C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 14", A: "+1 Rojo (P)",                       B: "+1 Amarillo",                     C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 15", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde",          C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 16", A: "+2 Amarillo (P)",                   B: "+2 Amarillo / -2 Azul",           C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 17", A: "+2 Amarillo (P)",                   B: "+2 Amarillo / -2 Verde",          C: "-2 Amarillo", D: "Sin problemática" },
+      { id: "Ley 18", A: "+1 Amarillo +1 Rojo (P)",           B: "+2 Amarillo / -2 Verde y Azul",   C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 19", A: "+2 Rojo (P)",                       B: "+2 Amarillo",                     C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 20", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Azul",           C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 21", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Rojo",              C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 22", A: "+1 Verde (P)",                      B: "+1 Verde",                        C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 23", A: "+1 Verde +1 Azul (P)",              B: "+1 Verde / -1 Rojo y Amarillo",   C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 24", A: "+1 Azul (P)",                       B: "+1 Verde / -1 Amarillo",          C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 25", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Azul",              C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 26", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Rojo",              C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 27", A: "+1 Verde +1 Azul (P)",              B: "+1 Verde",                        C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 28", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Rojo y Amarillo",   C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 29", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Amarillo",          C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 30", A: "+2 Verde (P)",                      B: "+2 Verde / -2 Rojo",              C: "-2 Verde",    D: "Sin problemática" },
+      { id: "Ley 31", A: "+1 Verde +1 Azul (P)",              B: "+2 Verde / -2 Rojo y Amarillo",   C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 32", A: "+2 Azul (P)",                       B: "+2 Verde / -2 Amarillo",          C: "-2 Verde",    D: "Sin problemática" },
+      { id: "Ley 33", A: "+2 Verde (P)",                      B: "+2 Verde / -2 Azul",              C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 34", A: "+1 Verde +1 Azul (P)",              B: "+1 Verde",                        C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 35", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Rojo",              C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 36", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Rojo",               C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 37", A: "+1 Azul (P)",                       B: "+1 Azul",                         C: "-0 Azul",     D: "Sin problemática" },
+      { id: "Ley 38", A: "+1 Verde +1 Azul (P)",              B: "+1 Azul / -1 Rojo y Amarillo",    C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 39", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Rojo",               C: "-0 Azul",     D: "Sin problemática" },
+      { id: "Ley 40", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Amarillo",           C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 41", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Rojo",               C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 42", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Rojo y Amarillo",    C: "-0 Azul",     D: "Sin problemática" },
+      { id: "Ley 43", A: "+1 Verde (P)",                      B: "+1 Azul / -1 Amarillo",           C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 44", A: "+1 Rojo (P)",                       B: "+1 Rojo / -1 Azul",               C: "-1 Rojo",     D: "Sin problemática" },
+      { id: "Ley 45", A: "+1 Rojo (P)",                       B: "+1 Rojo",                         C: "-0 Rojo",     D: "Sin problemática" },
+      { id: "Ley 46", A: "+1 Rojo (P)",                       B: "+1 Rojo / -1 Azul y Verde",       C: "-1 Rojo",     D: "Sin problemática" },
+      { id: "Ley 47", A: "+1 Rojo (P)",                       B: "+1 Rojo / -1 Azul",               C: "-0 Rojo",     D: "Sin problemática" },
+      { id: "Ley 48", A: "+1 Rojo +1 Amarillo (P)",           B: "+1 Rojo / -1 Verde",              C: "-1 Rojo",     D: "Sin problemática" },
+      { id: "Ley 49", A: "+1 Rojo (P)",                       B: "+1 Rojo / -1 Azul",               C: "-1 Rojo",     D: "Sin problemática" },
+      { id: "Ley 50", A: "+1 Rojo (P)",                       B: "+1 Rojo",                         C: "-0 Rojo",     D: "Sin problemática" }
+    ];
+    
+    const rightLaws = [
+      { id: "LID 1",  A: "1 Azul",                B: "1 Azul / -1 Rojo",           C: "-1 Azul", D: "Soberanía y desarrollo" },
+      { id: "LID 2",  A: "1 Azul",                B: "1 Azul / -1 Rojo",           C: "-1 Azul", D: "Justicia" },
+      { id: "LID 3",  A: "2 Azul",                B: "1 Azul / -1 Rojo y Amarillo", C: "-1 Azul", D: "Soberanía y desarrollo" },
+      { id: "LID 4",  A: "2 Azul",                B: "1 Azul / -2 Rojo y -1 Amarillo", C: "-2 Azul", D: "Justicia" },
+      { id: "LID 5",  A: "1 Azul y 1 Verde",      B: "1 Azul / -1 Rojo y Amarillo", C: "-2 Azul", D: "Soberanía y desarrollo" },
+      { id: "LID 6",  A: "2 Azul",                B: "1 Azul y 1 Verde / -1 Rojo y -2 Amarillo", C: "-1 Azul", D: "Justicia" },
+      { id: "LID 7",  A: "1 Azul y 2 Verde",      B: "1 Azul / -2 Rojo y 1 Amarillo", C: "-2 Azul", D: "Soberanía y desarrollo" },
+      { id: "LID 8",  A: "1 Azul",                B: "1 Azul y 1 Verde / -1 Rojo",   C: "-1 Azul", D: "Justicia" },
+      { id: "LID 9",  A: "2 Azul",                B: "1 Azul / -1 Rojo",           C: "-1 Azul", D: "Soberanía y desarrollo" },
+      { id: "LID 10", A: "2 Azul",                B: "1 Azul / -1 Rojo",           C: "-1 Azul", D: "Justicia" },
+      { id: "LID 11", A: "2 Azul",                B: "1 Azul y 1 Verde / -1 Rojo",   C: "-1 Azul", D: "Soberanía y desarrollo" },
+      { id: "LID 12", A: "2 Azul",                B: "1 Azul y 1 Verde / -1 Rojo",   C: "-2 Azul", D: "Justicia" }
+    ];
+    
+    // Nuevo arreglo: Leyes de urgencia (solo 3)
+    const urgencyLaws = [
+      {
+        id: "Ley inundación",
+        A: "+4 Amarillo +2 Rojo +2 Verde +1 Azul",
+        B: "+1 Amarillo +1 Verde +1 Rojo +1 Azul",
+        C: "-3 Amarillo -1 Rojo -1 Verde",
+        D: "Humanidad 1 Soberanía 1 / Si no es aprobada estos resultados serán negativos",
+        urgency: true
+      },
+      {
+        id: "Ley confinamiento (epidemia)",
+        A: "+3 Rojo +2 Verde +1 Amarillo",
+        B: "+1 Rojo +2 Amarillo / -3 Azul",
+        C: "-2 Rojo -1 Verde -1 Amarillo",
+        D: "Humanidad 2 / Si no es aprobada estos resultados serán negativos",
+        urgency: true
+      },
+      {
+        id: "Guerra contra el narcotráfico",
+        A: "+3 Azul +2 Verde",
+        B: "+2 Azul +1 Verde / -2 Amarillo y -3 Rojo",
+        C: "-2 Azul -1 Verde",
+        D: "Justicia 2 / Si no es aprobada estos resultados serán negativos",
+        urgency: true
+      }
+    ];
+    
+    // Selección de leyes: 2 comunes (que pueden ser reemplazadas con baja probabilidad por una ley de urgencia) y 2 leyes ideológicas
+    let selectedCommon = getRandomElements(commonLaws, 2);
+    selectedCommon = selectedCommon.map(law => {
+      if (Math.random() < 0.1) { 
+        return getRandomElements(urgencyLaws, 1)[0];
+      }
+      return law;
+    });
+    const selectedRight  = getRandomElements(rightLaws, 2);
+    const selectedLaws = selectedRight.concat(selectedCommon);
+    
+    // Función para construir el contenido HTML de cada ley
+    function buildLawContent(law) {
+      let content = `<h3>${law.id}</h3>
+        <div class="bonus-box">
+          <strong>BONUS para el promotor si la ley es aprobada:</strong><br>${replaceColors(law.A)}
+        </div>
+        <hr>
+        <p><strong>Los que votan a favor:</strong><br>${replaceColors(law.B)}</p>
+        <hr>
+        <p><strong>Los que votan en contra:</strong><br>${replaceColors(law.C)}</p>`;
+      
+      if (law.urgency) {
+        // Para leyes de urgencia, se separa la aclaración (parte luego de "/")
+        let parts = law.D.split('/');
+        let mainProblem = parts[0].trim();
+        let note = parts[1] ? parts[1].trim() : '';
+        content += `<hr>
+          <p><strong>Problemática a solucionar:</strong><br>${buildUrgencyProblems(mainProblem)}</p>`;
+        if(note){
+          content += `<div class="aclaracion">${replaceColors(note)}</div>`;
+        }
+      }
+      // Leyes ideológicas
+      else if (law.id.startsWith("LID")) {
+        content += `<hr>
+          <div class="problem-box">
+            <strong>Problemática a solucionar:</strong><br>${getProblematicEmoji(law.D)} ${law.D}
+          </div>`;
+      }
+      // Leyes comunes
+      else {
+        content += `<hr>
+          <p><strong>Problemática a solucionar:</strong><br>${replaceColors(law.D)}</p>`;
+      }
+      return content;
+    }
+    
+    // Renderizado de las leyes en el contenedor
+    const container = document.getElementById('lawsContainer');
+    selectedLaws.forEach(law => {
+      const lawDiv = document.createElement('div');
+      // Se asignan clases según el tipo de ley
+      lawDiv.className = 'law' 
+                        + (law.id.startsWith("LID") ? ' right-law' : '')
+                        + (law.urgency ? ' urgency-law' : '');
+      lawDiv.innerHTML = buildLawContent(law);
+      lawDiv.addEventListener('click', () => {
+        let modalHtml = buildLawContent(law);
+        // Si es ley ideológica, se agrega la imagen milei.png al pie de la carta
+        if (law.id.startsWith("LID")) {
+          modalHtml += `<div style="text-align:center; margin-top:20px;">
+                          <img src="milei.png" alt="milei" style="max-width:100%; border-radius:8px;">
+                        </div>`;
+        }
+        document.getElementById('modalContent').innerHTML = modalHtml;
+        // Si la ley es de urgencia, se añade la clase al modal para que tenga el fondo oscuro
+        if (law.urgency) {
+          document.getElementById('modalCard').classList.add('urgency-law');
+        } else {
+          document.getElementById('modalCard').classList.remove('urgency-law');
+        }
+        document.getElementById('modalOverlay').style.display = 'flex';
+      });
+      container.appendChild(lawDiv);
+    });
+    
+    // Evento para cerrar el modal
+    document.getElementById('modalClose').addEventListener('click', () => {
+      document.getElementById('modalOverlay').style.display = 'none';
+    });
+    
+    // Función de respaldo para leyes ideológicas (ya existente)
+    function getProblematicEmoji(problem) {
+      const lower = problem.toLowerCase();
+      let emoji = lower.includes('justicia') ? '👮‍♂️' : lower.includes('soberanía') ? '🍃' : '❔';
+      return `<span class="emoji-circle">${emoji}</span>`;
+    }
+  </script>
+</body>
+</html>

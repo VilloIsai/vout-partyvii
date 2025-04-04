@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio 2</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(4, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            border: 3px solid black;
+            width: 100px;
+            height: 100px;
+            color: white; /* Se fuerza el texto blanco */
+        }
+        .gold-border {
+            border: 5px solid gold;
+            animation: glow 1s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 5px gold; }
+            to { box-shadow: 0 0 15px gold; }
+        }
+        .boton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Modo 2</h1>
+    <div class="grid" id="grid-container"></div>
+    <button class="boton" onclick="generateGrid()">↺ Reiniciar</button>
+    <button class="boton" onclick="location.href='inicio.html'">⬅ Volver</button>
+    <script>
+        function generateGrid() {
+            const colors = ["Negro", "Azul", "Rojo"];
+            let squares = [];
+            colors.forEach(color => {
+                for (let i = 0; i < 4; i++) {
+                    squares.push(color);
+                }
+            });
+            squares = squares.sort(() => Math.random() - 0.5);
+            const container = document.getElementById("grid-container");
+            container.innerHTML = "";
+
+            const colorMap = {
+                "Negro": "black",
+                "Azul": "blue",
+                "Rojo": "red"
+            };
+
+            squares.forEach((color, index) => {
+                const div = document.createElement("div");
+                div.classList.add("square");
+                div.textContent = color;
+                div.style.backgroundColor = colorMap[color];
+
+                if (index >= 10) div.classList.add("gold-border");
+                container.appendChild(div);
+            });
+        }
+        generateGrid();
+    </script>
+</body>
+</html>

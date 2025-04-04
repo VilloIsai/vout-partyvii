@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Votación</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        .menu, .submenu { margin: 20px; }
+        .submenu { display: none; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Menú Base</h1>
+    <div class="menu">
+        <button onclick="toggleSubmenu('submenu1')">VOTO ÚNICO E IMAGEN</button>
+        <button onclick="toggleSubmenu('submenu2')">VOTO MÚLTIPLE</button>
+    </div>
+    
+    <div id="submenu1" class="submenu">
+        <button>CON PROBLEMÁTICAS</button>
+        <button>CON IDEOLOGÍA</button>
+        <button>SIMPLE</button>
+    </div>
+    
+    <div id="submenu2" class="submenu">
+        <button>CON PROBLEMÁTICAS</button>
+        <button onclick="location.href='ideologia.html'">CON IDEOLOGÍA</button>
+        <button>SIMPLE</button>
+    </div>
+    
+    <script>
+        function toggleSubmenu(id) {
+            let submenu = document.getElementById(id);
+            let allSubmenus = document.querySelectorAll('.submenu');
+            allSubmenus.forEach(menu => {
+                if (menu !== submenu) menu.style.display = 'none';
+            });
+            submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

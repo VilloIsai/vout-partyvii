@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio - Voto Múltiple con Mapa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Fondo con nueva imagen y overlay para legibilidad */
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('backmap.png') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+    
+    /* Capa de oscurecimiento para mejorar la legibilidad */
+    body::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 0;
+    }
+    
+    /* Contenedor principal animado */
+    .container {
+      position: relative;
+      z-index: 1;
+      background: #fff;
+      border-radius: 10px;
+      padding: 40px 30px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 90%;
+      animation: fadeIn 0.8s ease-out, float 5s ease-in-out infinite;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+    
+    /* Título */
+    h1 {
+      font-family: 'Merriweather', serif;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+    }
+    
+    /* Botones del menú */
+    .menu-buttons {
+      margin-bottom: 30px;
+    }
+    
+    .menu-buttons button {
+      padding: 12px 24px;
+      margin: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #d32f2f;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .menu-buttons button:hover {
+      background-color: #b71c1c;
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Botón azul para Modo mapa */
+    .map-button {
+      padding: 12px 24px;
+      margin: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .map-button:hover {
+      background-color: #0d47a1;
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Botón para volver atrás */
+    .back-button {
+      padding: 12px 24px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .back-button:hover {
+      background-color: #0d47a1;
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Mensajes informativos */
+    #gridContainer p {
+      font-size: 20px;
+      font-style: italic;
+      color: #555;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Inicio</h1>
+    <div class="menu-buttons">
+      <button onclick="location.href='mapa2.html'">2 Jugadores</button>
+      <button onclick="location.href='mapa3.html'">3 Jugadores</button>
+      <button onclick="location.href='mapa4.html'">4 Jugadores</button>
+      <button onclick="location.href='mapa5.html'">5 Jugadores</button>
+      <button onclick="location.href='mapa6.html'">6 Jugadores</button>
+      <button class="map-button" onclick="location.href='inicio.html'">Modo grilla</button>
+    </div>
+    <div id="gridContainer"></div>
+    <button class="back-button" onclick="location.href='inicio.html'">⬅ Volver atrás</button>
+  </div>
+  
+  <script>
+    // Función placeholder: se implementará cada modo según las reglas.
+    function generateGrid(mode) {
+      console.log("Modo seleccionado:", mode);
+      document.getElementById('gridContainer').innerHTML = "<p>Modo " + mode + " seleccionado.</p>";
+    }
+  </script>
+</body>
+</html>
