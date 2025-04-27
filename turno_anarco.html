@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Turno Anarquía - Voto con Ideología</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Raleway', sans-serif;
+      margin: 0; padding: 30px;
+      background: linear-gradient(135deg, #1e1e1e, #313131);
+      color: #f0f0f0; min-height: 100vh; position: relative;
+    }
+    .volver {
+      position: fixed; top: 20px; left: 20px;
+      background: #444; color: #fff; border: none;
+      padding: 10px 20px; border-radius: 8px;
+      cursor: pointer; font-size: 16px; transition: .3s;
+      z-index: 1100;
+    }
+    .volver:hover { background: #555; }
+    h1, h3 { text-align: center; margin-bottom: 20px; }
+    h1 {
+      font-size: 32px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 2px;
+    }
+    #lawsContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+      gap: 20px; justify-items: center;
+      margin: 40px auto; max-width: 1200px;
+    }
+    .law {
+      background: #2a2a2a; border: 1px solid #444;
+      border-radius: 12px; padding: 20px; width: 300px;
+      cursor: pointer; transition: .3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .law:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    }
+    /* Leyes de Anarquía (LIO) */
+    .anarchy-law {
+      background: #000;
+      border: 2px solid #FFD700;
+    }
+    .law p { margin: 10px 0; line-height: 1.4; }
+    .emoji-circle, .problem-emoji {
+      display: inline-block; border-radius: 50%;
+      width: 24px; height: 24px; line-height: 24px;
+      text-align: center; font-size: 16px; margin-right: 5px;
+    }
+    .emoji-circle { background-color: #007BFF; color: #fff; }
+    .problem-emoji { background-color: #f10400; color: #000; }
+    .positive { color: #32cd32; font-weight: bold; }
+    .negative { color: #ff4500; font-weight: bold; }
+    #modalOverlay {
+      position: fixed; top: 0; left: 0;
+      width:100%; height:100%;
+      background: rgba(0,0,0,0.7);
+      display: none; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    #modalCard {
+      background: #1f1f1f; border-radius:12px;
+      padding:30px; width:320px; min-height:420px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      position: relative; color: #f0f0f0;
+      font-size:20px; line-height:1.5;
+    }
+    #modalClose {
+      position: absolute; top:10px; right:10px;
+      background:#007BFF; color:#fff; border:none;
+      border-radius:6px; padding:6px 12px;
+      cursor:pointer; font-size:14px;
+    }
+    hr {
+      border:none; border-top:1px solid #555;
+      margin:15px 0;
+    }
+    .problem-box {
+      background-color: #3a3a00; padding:10px;
+      border-radius:6px;
+    }
+    .pero-label {
+      background-color: #cc3333; color: #000;
+      padding:2px 4px; border-radius:4px;
+      margin:0 4px; font-weight:bold;
+      display:inline-block;
+    }
+    @media (max-width:600px) {
+      #lawsContainer { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <button class="volver" onclick="location.href='ideologia.html'">⬅ Volver al menú</button>
+  <h1>Turno Anarquía</h1>
+  <div id="lawsContainer"></div>
+  
+  <div id="modalOverlay">
+    <div id="modalCard">
+      <button id="modalClose">Volver</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+  
+  <script>
+    function replaceSlashWithPero(text) {
+      return text.replace(/\s*\/\s*/g, ' <span class="pero-label">PERO</span> ');
+    }
+    function replaceColors(text) {
+      let mod = replaceSlashWithPero(text);
+      return mod.replace(/([+-]?\d+)\s*(Amarillo|Azul|Verde|Rojo)/gi, (m,n,c) => {
+        const sq = { Amarillo:'🟨', Azul:'🟦', Verde:'🟩', Rojo:'🟥' }[c]||c;
+        if (n[0] !== '-' && n[0] !== '+') n='+'+n;
+        const cls = n.startsWith('+')?'positive':'negative';
+        return `<span class="${cls}">${n} ${sq}</span>`;
+      });
+    }
+    function getProblematicEmoji(problem) {
+      const lower = problem.toLowerCase();
+      if (lower.includes('- humanidad')) return `<span class="problem-emoji">🤍</span>`;
+      if (lower.includes('- equidad'))   return `<span class="problem-emoji">⚖️</span>`;
+      if (lower.includes('- justicia'))  return `<span class="emoji-circle">👮‍♂️</span>`;
+      if (lower.includes('- soberanía'))return `<span class="emoji-circle">🌿</span>`;
+      return `<span class="emoji-circle">❔</span>`;
+    }
+    function getRandomElements(arr,count) {
+      const copy = arr.slice(), res=[];
+      for(let i=0;i<count&&copy.length;i++){
+        res.push(copy.splice(Math.floor(Math.random()*copy.length),1)[0]);
+      }
+      return res;
+    }
+
+    // ---- Common laws originales (sin tocar) ----
+    const commonLaws = [
+      { id: "Ley 1",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Azul",           C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 2",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo",                     C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 3",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde y -1 Azul",     C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 4",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde",            C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 5",  A: "+1 Amarillo +1 Rojo (P)",           B: "+1 Amarillo / -1 Rojo",             C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 6",  A: "+1 Rojo (P)",                       B: "+1 Amarillo / -1 Azul",             C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 7",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde",            C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 8",  A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde y -1 Azul",     C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 9",  A: "+1 Amarillo +1 Rojo (P)",           B: "+1 Amarillo",                     C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 10", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Azul",           C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 11", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde",          C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 12", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde y -1 Azul",   C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 13", A: "+1 Amarillo +1 Rojo (P)",           B: "+1 Amarillo / -1 Azul",           C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 14", A: "+1 Rojo (P)",                       B: "+1 Amarillo",                     C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 15", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Verde",          C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 16", A: "+2 Amarillo (P)",                   B: "+2 Amarillo / -2 Azul",           C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 17", A: "+2 Amarillo (P)",                   B: "+2 Amarillo / -2 Verde",          C: "-2 Amarillo", D: "Sin problemática" },
+      { id: "Ley 18", A: "+1 Amarillo +1 Rojo (P)",           B: "+2 Amarillo / -2 Verde y -1 Azul",   C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 19", A: "+2 Rojo (P)",                       B: "+2 Amarillo",                     C: "-0 Amarillo", D: "Sin problemática" },
+      { id: "Ley 20", A: "+1 Amarillo (P)",                   B: "+1 Amarillo / -1 Azul",           C: "-1 Amarillo", D: "Sin problemática" },
+      { id: "Ley 21", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Rojo",              C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 22", A: "+1 Verde (P)",                      B: "+1 Verde",                        C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 23", A: "+1 Verde +1 Azul (P)",              B: "+1 Verde / -1 Rojo y -1 Amarillo",   C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 24", A: "+1 Azul (P)",                       B: "+1 Verde / -1 Amarillo",          C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 25", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Azul",              C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 26", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Rojo",              C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 27", A: "+1 Verde +1 Azul (P)",              B: "+1 Verde",                        C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 28", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Rojo y -1 Amarillo",   C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 29", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Amarillo",          C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 30", A: "+2 Verde (P)",                      B: "+2 Verde / -2 Rojo",              C: "-2 Verde",    D: "Sin problemática" },
+      { id: "Ley 31", A: "+1 Verde +1 Azul (P)",              B: "+2 Verde / -2 Rojo y -1 Amarillo",   C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 32", A: "+2 Azul (P)",                       B: "+2 Verde / -2 Amarillo",          C: "-2 Verde",    D: "Sin problemática" },
+      { id: "Ley 33", A: "+2 Verde (P)",                      B: "+2 Verde / -2 Azul",              C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 34", A: "+1 Verde +1 Azul (P)",              B: "+1 Verde",                        C: "-1 Verde",    D: "Sin problemática" },
+      { id: "Ley 35", A: "+1 Verde (P)",                      B: "+1 Verde / -1 Rojo",              C: "-0 Verde",    D: "Sin problemática" },
+      { id: "Ley 36", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Rojo",               C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 37", A: "+1 Azul (P)",                       B: "+1 Azul",                         C: "-0 Azul",     D: "Sin problemática" },
+      { id: "Ley 38", A: "+1 Verde +1 Azul (P)",              B: "+1 Azul / -1 Rojo y -1 Amarillo",    C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 39", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Rojo",               C: "-0 Azul",     D: "Sin problemática" },
+      { id: "Ley 40", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Amarillo",           C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 41", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Rojo",               C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 42", A: "+1 Azul (P)",                       B: "+1 Azul / -1 Rojo y -1 Amarillo",    C: "-0 Azul",     D: "Sin problemática" },
+      { id: "Ley 43", A: "+1 Verde (P)",                      B: "+1 Azul / -1 Amarillo",           C: "-1 Azul",     D: "Sin problemática" },
+      { id: "Ley 44", A: "+1 Rojo (P)",                       B: "+1 Rojo / -1 Azul",               C: "-1 Rojo",     D: "Sin problemática" },
+      { id: "Ley 45", A: "+1 Rojo (P)",                       B: "+1 Rojo",                         C: "-0 Rojo",     D: "Sin problemática" },
+      { id: "Ley 46", A: "+1 Rojo (P)",                       B: "+1 Rojo / -1 Azul y -1 Verde",       C: "-1 Rojo",     D: "Sin problemática" },
+      { id: "Ley 47", A: "+1 Rojo (P)",                       B: "+1 Rojo / -1 Azul",               C: "-0 Rojo",     D: "Sin problemática" },
+      { id: "Ley 48", A: "+1 Rojo +1 Amarillo (P)",           B: "+1 Rojo / -1 Verde",              C: "-1 Rojo",     D: "Sin problemática" },
+      { id: "Ley 49", A: "+1 Rojo (P)",                       B: "+1 Rojo / -1 Azul",               C: "-1 Rojo",     D: "Sin problemática" },
+      { id: "Ley 50", A: "+1 Rojo (P)",                       B: "+1 Rojo",                         C: "-0 Rojo",     D: "Sin problemática" }
+    ];    // ---------------------------------------------
+
+    // Tus 12 LIO con todos los cambios ya aplicados:
+    const leftLaws = [
+      { id:"LIO 1",  A:"1 Rojo",                    B:"1 Rojo / -1 Azul",                     C:"0",                     D:"- Soberanía" },
+      { id:"LIO 3",  A:"2 Rojo",                    B:"1 Rojo / -1 Azul y Verde",              C:"-1 Rojo",               D:"- Soberanía" },
+      { id:"LIO 5",  A:"1 Rojo y 1 Amarillo",       B:"1 Rojo / -1 Azul y -1 Verde",           C:"0",                     D:"- Soberanía" },
+      { id:"LIO 2",  A:"1 Rojo",                    B:"1 Rojo / -2 Azul",                      C:"0",                     D:"- Justicia" },
+      { id:"LIO 4",  A:"2 Rojo",                    B:"1 Rojo / -2 Azul y -1 Verde",            C:"0",                     D:"- Justicia" },
+      { id:"LIO 6",  A:"2 Rojo",                    B:"1 Rojo y 1 Amarillo / -2 Azul y -2 Verde", C:"-1 Rojo",             D:"- Justicia" },
+      { id:"LIO 7",  A:"1 Azul y 2 Verde",           B:"1 Azul / -2 Rojo y -1 Amarillo",        C:"0",                     D:"- Equidad" },
+      { id:"LIO 9",  A:"2 Azul",                    B:"1 Azul / -1 Rojo",                      C:"-1 Azul",               D:"- Equidad" },
+      { id:"LIO 11", A:"2 Azul",                    B:"1 Azul y 1 Verde / -1 Rojo",             C:"-1 Azul",               D:"- Equidad" },
+      { id:"LIO 8",  A:"1 Azul",                    B:"1 Azul y 1 Verde / -1 Rojo",             C:"-1 Azul y -1 Verde",       D:"- Humanidad" },
+      { id:"LIO 10", A:"2 Azul",                    B:"1 Azul / -2 Rojo",                      C:"0",                     D:"- Humanidad" },
+      { id:"LIO 12", A:"2 Azul",                    B:"1 Azul y 1 Verde / -1 Rojo",             C:"0",                     D:"- Humanidad" }
+    ];
+
+    const selectedCommon = getRandomElements(commonLaws,2);
+    const selectedLeft   = getRandomElements(leftLaws,2);
+    const selectedLaws   = selectedLeft.concat(selectedCommon);
+
+    function buildLawContent(law) {
+      let html = `<h3>${law.id}</h3>
+        <p><strong>BONUS para el promotor si la ley es aprobada:</strong><br>${replaceColors(law.A)}</p>
+        <hr>
+        <p><strong>Los que votan a favor:</strong><br>${replaceColors(law.B)}</p>
+        <hr>
+        <p><strong>Los que votan en contra:</strong><br>${replaceColors(law.C)}</p>
+        <hr>
+        <div class="problem-box">
+          <strong>Problemática a solucionar:</strong><br>${getProblematicEmoji(law.D)} ${law.D}
+        </div>`;
+      return html;
+    }
+
+    const container = document.getElementById('lawsContainer');
+    selectedLaws.forEach(law => {
+      const div = document.createElement('div');
+      div.className = 'law' + (law.id.startsWith("LIO") ? ' anarchy-law' : '');
+      div.innerHTML = buildLawContent(law);
+      div.addEventListener('click', () => {
+        let modal = buildLawContent(law);
+        if (law.id.startsWith("LIO")) {
+          modal += `<div style="text-align:center; margin-top:20px;">
+                      <img src="anarco.png" alt="anarco" style="max-width:100%;border-radius:8px;">
+                    </div>`;
+        }
+        document.getElementById('modalContent').innerHTML = modal;
+        document.getElementById('modalOverlay').style.display = 'flex';
+      });
+      container.appendChild(div);
+    });
+
+    document.getElementById('modalClose').addEventListener('click', () => {
+      document.getElementById('modalOverlay').style.display = 'none';
+    });
+  </script>
+</body>
+</html>
