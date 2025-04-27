@@ -10,40 +10,41 @@
     body {
       font-family: 'Raleway', sans-serif;
       text-align: center;
-      margin: 0;             /* Quitamos el margin para mayor control */
-      padding: 50px;         /* Espaciado interno */
-      padding-bottom: 50vh;  /* Reservamos espacio en la parte inferior para la imagen */
+      margin: 0;
+      padding: 40px 20px; /* Ajustado para móviles */
       background: linear-gradient(to right, #181818, #252525);
       color: white;
       position: relative;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;   /* Centramos los elementos hijos */
+      align-items: center;
     }
 
     h1 {
-      font-size: 30px;
+      font-size: 26px; /* Ajustado para pantallas pequeñas */
       font-weight: 600;
       text-transform: uppercase;
       margin-bottom: 20px;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
     }
 
-    /* Botón de volver: se coloca al inicio de la columna y se alinea a la izquierda */
+    /* Botón de volver */
     .volver {
       align-self: flex-start;
       background: #444;
       color: white;
-      padding: 12px 30px;
+      padding: 10px 20px;
       margin-bottom: 20px;
       border-radius: 12px;
       font-size: 16px;
+      width: auto; /* Evita que se vea enorme en móviles */
     }
 
     /* Contenedor de botones de Turno */
     .menu {
       display: flex;
+      flex-wrap: wrap; /* Permite que los botones se acomoden en móviles */
       justify-content: center;
       gap: 15px;
       margin-bottom: 30px;
@@ -51,19 +52,20 @@
 
     /* Estilo base para los botones */
     button {
-      padding: 14px 30px;
-      font-size: 18px;
+      padding: 12px 25px; /* Menos padding en móviles */
+      font-size: 16px;
       cursor: pointer;
       border: none;
       font-weight: bold;
       border-radius: 12px;
       transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
       box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+      max-width: 90%; /* Evita que los botones sean demasiado anchos */
     }
 
     button:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
     }
 
     /* Botones de Turno */
@@ -88,36 +90,49 @@
       color: white;
     }
 
-    /* Botón de Inicio: dorado con efecto neón */
+    /* Botón de Inicio */
     .inicio {
       background: gold;
       color: black;
-      font-size: 20px;
-      margin-top: 25px;
-      padding: 16px 35px;
+      font-size: 18px; /* Ajustado para pantallas pequeñas */
+      margin-top: 20px;
+      padding: 14px 30px;
       border-radius: 12px;
-      box-shadow: 0 0 15px gold;
+      box-shadow: 0 0 12px gold;
       animation: glow 1.5s infinite alternate;
       display: block;
       text-transform: uppercase;
     }
 
     @keyframes glow {
-      from { box-shadow: 0 0 20px gold; }
-      to { box-shadow: 0 0 30px gold; }
+      from { box-shadow: 0 0 18px gold; }
+      to { box-shadow: 0 0 25px gold; }
     }
 
-    /* Imagen del Congreso en la parte inferior (solo la imagen, sin desplazar el contenido) */
+    /* Imagen del Congreso */
     .footer-image {
-      position: fixed;
+      position: absolute; /* Evita problemas con la posición en móviles */
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 50vh; /* Ocupa la mitad inferior */
+      height: 40vh; /* Ajustado para pantallas pequeñas */
       background-image: url('congreso.png');
       background-size: cover;
       background-position: center;
-      z-index: -1; /* Queda detrás del resto del contenido */
+      z-index: -1;
+    }
+    
+    /* Ajustes adicionales para móviles */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 22px;
+      }
+      button {
+        font-size: 14px;
+      }
+      .inicio {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
@@ -134,7 +149,6 @@
   
   <button class="inicio" onclick="location.href='inicio.html'">Inicio</button>
 
-  <!-- La imagen se carga en el fondo, fija al final de la ventana -->
   <div class="footer-image"></div>
 </body>
 </html>
