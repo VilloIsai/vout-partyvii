@@ -268,7 +268,7 @@
     function replaceColors(text) {
       let modified = replaceSlashWithPero(text);
       modified = modified.replace(/([+-]?\d+)\s*(Amarillo|Azul|Verde|Rojo)/gi, (match, num, color) => {
-        const squares = { "Amarillo": "🟨", "Azul": "🟦", "Verde": "🟩", "Rojo": "🟥" };
+        const squares = { "Amarillo": "🟧", "Azul": "🟪", "Verde": "🧊", "Rojo": "🟫" };
         let square = squares[color] || color;
         if (num[0] !== '-' && num[0] !== '+') { 
           num = '+' + num; 
