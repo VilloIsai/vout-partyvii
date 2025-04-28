@@ -293,12 +293,12 @@
     // Función para reemplazar valores numéricos y colores; inserta emojis junto al separador.
     function replaceColors(text) {
       let modified = replaceSlashWithPero(text);
-      modified = modified.replace(/([+-]?\d+)\s*(Amarillo|Azul|Verde|Rojo)/gi, (match, num, color) => {
+      modified = modified.replace(/([+-]?\d+)\s*(Naranja|Violeta|Celeste|Marrón)/gi, (match, num, color) => {
         const squares = {
-          "Amarillo": "🟨",
-          "Azul": "🟦",
-          "Verde": "🟩",
-          "Rojo": "🟥"
+          "Naranja": "🟧",
+          "Violeta": "🟪",
+          "Celeste": "⏹️",
+          "Marrón": "🟫"
         };
         let square = squares[color] || color;
         if (num[0] !== '-' && num[0] !== '+') {
