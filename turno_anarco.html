@@ -114,7 +114,7 @@
     function replaceColors(text) {
       let mod = replaceSlashWithPero(text);
       return mod.replace(/([+-]?\d+)\s*(Amarillo|Azul|Verde|Rojo)/gi, (m,n,c) => {
-        const sq = { Amarillo:'🟨', Azul:'🟦', Verde:'🟩', Rojo:'🟥' }[c]||c;
+        const sq = { Naranja:'🟧', Violeta:'🟪', Celeste:'⏹️', Marrón:'🟫' }[c]||c;
         if (n[0] !== '-' && n[0] !== '+') n='+'+n;
         const cls = n.startsWith('+')?'positive':'negative';
         return `<span class="${cls}">${n} ${sq}</span>`;
